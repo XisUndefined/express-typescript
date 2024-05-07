@@ -3,13 +3,9 @@ import { ResponseError } from "../utils/ResponseError";
 import { Request, Response, NextFunction } from "express";
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 interface Person {
-  id: number;
+  id?: number;
   name: string;
   username: string;
   email: string;
@@ -19,7 +15,7 @@ export default class PeopleController {
   static getAllPeople = AsyncErrorHandler.wrapper(
     async (req: Request, res: Response, next: NextFunction) => {
       const response = await fs.promises.readFile(
-        path.join(__dirname, "../data/people.json"),
+        path.join(__dirname, "./../../data/people.json"),
         "utf-8"
       );
       const people = JSON.parse(response);
@@ -34,7 +30,7 @@ export default class PeopleController {
     async (req: Request, res: Response, next: NextFunction) => {
       const { id } = req.params;
       const response = await fs.promises.readFile(
-        path.join(__dirname, "../data/people.json"),
+        path.join(__dirname, "./../../data/people.json"),
         "utf-8"
       );
       const people = JSON.parse(response);
@@ -56,26 +52,26 @@ export default class PeopleController {
 
   static createPeople = AsyncErrorHandler.wrapper(
     async (req: Request, res: Response, next: NextFunction) => {
-      const { id, name, username, email } = req.body;
-      if (!id || !name || !username || !email) {
+      const { name, username, email } = req.body;
+      if (!name || !username || !email) {
         const error = new ResponseError("Fill all field data", 403);
         return next(error);
       }
       const response = await fs.promises.readFile(
-        path.join(__dirname, "../data/people.json"),
+        path.join(__dirname, "./../../data/people.json"),
         "utf-8"
       );
       const people = JSON.parse(response);
-      const checkPeopleId = people.filter(
-        (person: Person) => person.id === parseInt(id)
+      const checkPeopleUsername = people.filter(
+        (person: Person) => person.username === username
       );
       const checkPeopleEmail = people.filter(
         (person: Person) => person.email === email
       );
 
-      if (checkPeopleId.length) {
+      if (checkPeopleUsername.length) {
         const error = new ResponseError(
-          "User with given ID already registered",
+          "User with given username already registered",
           409
         );
         return next(error);
@@ -89,8 +85,8 @@ export default class PeopleController {
         return next(error);
       }
 
-      const newPeopleData = {
-        id: parseInt(id),
+      const newPeopleData: Person = {
+        id: people.length + 1,
         name,
         username,
         email,
@@ -99,7 +95,7 @@ export default class PeopleController {
       people.push(newPeopleData);
 
       await fs.promises.writeFile(
-        path.join(__dirname, "../data/people.json"),
+        path.join(__dirname, "./../../data/people.json"),
         JSON.stringify(people),
         "utf-8"
       );
@@ -114,9 +110,13 @@ export default class PeopleController {
   static updatePeopleById = AsyncErrorHandler.wrapper(
     async (req: Request, res: Response, next: NextFunction) => {
       const { id } = req.params;
-      const { name, username, email } = req.body;
+      const { name, username, email }: Person = req.body;
+      if (!name || !username || !email) {
+        const error = new ResponseError("Fill all field data", 403);
+        return next(error);
+      }
       const response = await fs.promises.readFile(
-        path.join(__dirname, "../data/people.json"),
+        path.join(__dirname, "./../../data/people.json"),
         "utf-8"
       );
       const people = JSON.parse(response);
@@ -132,16 +132,17 @@ export default class PeopleController {
       const newPeopleData = [
         { id: parseInt(id), name, username, email },
         ...people.filter((person: Person) => person.id !== parseInt(id)),
-      ];
+      ].sort((a, b) => a.id - b.id);
 
       await fs.promises.writeFile(
-        path.join(__dirname, "../data/people.json"),
+        path.join(__dirname, "./../../data/people.json"),
         JSON.stringify(newPeopleData),
         "utf-8"
       );
       res.status(200).json({
         status: "success",
         message: "User has been updated",
+        data: { id: parseInt(id), name, username, email },
       });
     }
   );
@@ -150,7 +151,7 @@ export default class PeopleController {
     async (req: Request, res: Response, next: NextFunction) => {
       const { id } = req.params;
       const response = await fs.promises.readFile(
-        path.join(__dirname, "../data/people.json"),
+        path.join(__dirname, "./../../data/people.json"),
         "utf-8"
       );
       const people = JSON.parse(response);
@@ -167,7 +168,7 @@ export default class PeopleController {
         (person: Person) => person.id !== parseInt(id)
       );
       await fs.promises.writeFile(
-        path.join(__dirname, "../data/people.json"),
+        path.join(__dirname, "./../../data/people.json"),
         JSON.stringify(deletedPeople),
         "utf-8"
       );

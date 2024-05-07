@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsc && nodemon dist/server.js"
   },
-  "type": "module",
+  "type": "commonjs",
   "author": "Muhlis Ahmad Abdillah",
   "license": "ISC",
   "dependencies": {

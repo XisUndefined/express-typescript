@@ -3,13 +3,9 @@ import { ResponseError } from "../utils/ResponseError";
 import { Request, Response, NextFunction } from "express";
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 interface Product {
-  id: number;
+  id?: number;
   name: string;
   description: string;
   price: number;
@@ -20,7 +16,7 @@ export default class ProductController {
   static getAllProducts = AsyncErrorHandler.wrapper(
     async (req: Request, res: Response, next: NextFunction) => {
       const response = await fs.promises.readFile(
-        path.join(__dirname, "../data/products.json"),
+        path.join(__dirname, "./../../data/products.json"),
         "utf-8"
       );
       const products = JSON.parse(response);
@@ -35,7 +31,7 @@ export default class ProductController {
     async (req: Request, res: Response, next: NextFunction) => {
       const { id } = req.params;
       const response = await fs.promises.readFile(
-        path.join(__dirname, "../data/products.json"),
+        path.join(__dirname, "./../../data/products.json"),
         "utf-8"
       );
       const products = JSON.parse(response);
@@ -57,13 +53,13 @@ export default class ProductController {
 
   static createProduct = AsyncErrorHandler.wrapper(
     async (req: Request, res: Response, next: NextFunction) => {
-      const { id, name, description, price, category }: Product = req.body;
+      const { name, description, price, category } = req.body;
       if (!name || !description || !price || !category) {
         const error = new ResponseError("Fill all field data", 403);
         return next(error);
       }
       const response = await fs.promises.readFile(
-        path.join(__dirname, "../data/products.json"),
+        path.join(__dirname, "./../../data/products.json"),
         "utf-8"
       );
       const products = JSON.parse(response);
@@ -83,14 +79,14 @@ export default class ProductController {
         id: products.length + 1,
         name,
         description,
-        price,
+        price: parseInt(price),
         category,
       };
 
       products.push(newProductData);
 
       await fs.promises.writeFile(
-        path.join(__dirname, "../data/products.json"),
+        path.join(__dirname, "./../../data/products.json"),
         JSON.stringify(products),
         "utf-8"
       );
@@ -106,9 +102,13 @@ export default class ProductController {
     async (req: Request, res: Response, next: NextFunction) => {
       const { id } = req.params;
       const { name, description, price, category } = req.body;
+      if (!name || !description || !price || !category) {
+        const error = new ResponseError("Fill all field data", 403);
+        return next(error);
+      }
 
       const response = await fs.promises.readFile(
-        path.join(__dirname, "../data/products.json"),
+        path.join(__dirname, "./../../data/products.json"),
         "utf-8"
       );
       const products = JSON.parse(response);
@@ -122,19 +122,31 @@ export default class ProductController {
       }
 
       const newProductData = [
-        { id: parseInt(id), name, description, price, category },
+        {
+          id: parseInt(id),
+          name,
+          description,
+          price: parseInt(price),
+          category,
+        },
         ...products.filter((product: Product) => product.id !== parseInt(id)),
-      ];
+      ].sort((a, b) => a.id - b.id);
 
       await fs.promises.writeFile(
-        path.join(__dirname, "../data/people.json"),
+        path.join(__dirname, "./../../data/products.json"),
         JSON.stringify(newProductData),
         "utf-8"
       );
       res.status(200).json({
         status: "success",
         message: "Product has been updated",
-        data: newProductData,
+        data: {
+          id: parseInt(id),
+          name,
+          description,
+          price: parseInt(price),
+          category,
+        },
       });
     }
   );
@@ -143,7 +155,7 @@ export default class ProductController {
     async (req: Request, res: Response, next: NextFunction) => {
       const { id } = req.params;
       const response = await fs.promises.readFile(
-        path.join(__dirname, "../data/products.json"),
+        path.join(__dirname, "./../../data/products.json"),
         "utf-8"
       );
       const products = JSON.parse(response);
@@ -160,12 +172,12 @@ export default class ProductController {
         (product: Product) => product.id !== parseInt(id)
       );
       await fs.promises.writeFile(
-        path.join(__dirname, "../data/products.json"),
+        path.join(__dirname, "./../../data/products.json"),
         JSON.stringify(deletedProduct),
         "utf-8"
       );
 
-      res.status(204).json({
+      res.status(202).json({
         status: "success",
         message: "Product has been deleted",
       });

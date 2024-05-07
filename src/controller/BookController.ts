@@ -3,10 +3,6 @@ import { ResponseError } from "../utils/ResponseError";
 import { Request, Response, NextFunction } from "express";
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 interface Book {
   id?: number;
@@ -20,7 +16,7 @@ export default class BookController {
   static getAllBooks = AsyncErrorHandler.wrapper(
     async (req: Request, res: Response, next: NextFunction) => {
       const response = await fs.promises.readFile(
-        path.join(__dirname, "../data/books.json"),
+        path.join(__dirname, "./../../data/books.json"),
         "utf-8"
       );
       const books = JSON.parse(response);
@@ -35,7 +31,7 @@ export default class BookController {
     async (req: Request, res: Response, next: NextFunction) => {
       const { id } = req.params;
       const response = await fs.promises.readFile(
-        path.join(__dirname, "../data/books.json"),
+        path.join(__dirname, "./../../data/books.json"),
         "utf-8"
       );
       const books = JSON.parse(response);
@@ -63,7 +59,7 @@ export default class BookController {
         return next(error);
       }
       const response = await fs.promises.readFile(
-        path.join(__dirname, "../data/books.json"),
+        path.join(__dirname, "./../../data/books.json"),
         "utf-8"
       );
       const books = JSON.parse(response);
@@ -88,7 +84,7 @@ export default class BookController {
       books.push(newBookData);
 
       await fs.promises.writeFile(
-        path.join(__dirname, "../data/books.json"),
+        path.join(__dirname, "./../../data/books.json"),
         JSON.stringify(books),
         "utf-8"
       );
@@ -104,9 +100,13 @@ export default class BookController {
     async (req: Request, res: Response, next: NextFunction) => {
       const { id } = req.params;
       const { title, author, publishDate, genre }: Book = req.body;
+      if (!title || !author || !publishDate || !genre) {
+        const error = new ResponseError("Fill all field data", 403);
+        return next(error);
+      }
 
       const response = await fs.promises.readFile(
-        path.join(__dirname, "../data/books.json"),
+        path.join(__dirname, "./../../data/books.json"),
         "utf-8"
       );
       const books = JSON.parse(response);
@@ -122,17 +122,23 @@ export default class BookController {
       const newBookData = [
         { id: parseInt(id), title, author, publish_data: publishDate, genre },
         ...books.filter((book: Book) => book.id !== parseInt(id)),
-      ];
+      ].sort((a, b) => a.id - b.id);
 
       await fs.promises.writeFile(
-        path.join(__dirname, "../data/books.json"),
+        path.join(__dirname, "./../../data/books.json"),
         JSON.stringify(newBookData),
         "utf-8"
       );
       res.status(200).json({
         status: "success",
         message: "Book has been updated",
-        data: newBookData,
+        data: {
+          id: parseInt(id),
+          title,
+          author,
+          publish_data: publishDate,
+          genre,
+        },
       });
     }
   );
@@ -141,7 +147,7 @@ export default class BookController {
     async (req: Request, res: Response, next: NextFunction) => {
       const { id } = req.params;
       const response = await fs.promises.readFile(
-        path.join(__dirname, "../data/books.json"),
+        path.join(__dirname, "./../../data/books.json"),
         "utf-8"
       );
       const books = JSON.parse(response);
@@ -158,12 +164,12 @@ export default class BookController {
         (book: Book) => book.id !== parseInt(id)
       );
       await fs.promises.writeFile(
-        path.join(__dirname, "../data/books.json"),
+        path.join(__dirname, "./../../data/books.json"),
         JSON.stringify(deletedBook),
         "utf-8"
       );
 
-      res.status(204).json({
+      res.status(202).json({
         status: "success",
         message: "Book has been deleted",
       });
