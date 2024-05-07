@@ -8,7 +8,7 @@ import peopleRoute from "./route/peopleRoute";
 import { globalErrorMiddleware } from "./middleware/errorMiddleware";
 import { ResponseError } from "./utils/ResponseError";
 
-export const app: Express = express();
+const app: Express = express();
 
 // MIDDLEWARE
 app.use(express.urlencoded());
@@ -27,3 +27,5 @@ app.all("*", (req, res, next) => {
 
 // GLOBAL ERROR HANDLER
 app.use(globalErrorMiddleware);
+
+export default app;
