@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "name": "Laptop Pro 14",
+    "description": "High performance laptop with 16GB RAM and 1TB SSD",
+    "price": 1499.99,
+    "category": "Electronics"
+  },
+  {
+    "id": 2,
+    "name": "Electric Kettle",
+    "description": "1.5L stainless steel kettle with automatic shutdown",
+    "price": 29.99,
+    "category": "Home Appliances"
+  },
+  {
+    "id": 3,
+    "name": "Bluetooth Headphones",
+    "description": "Noise cancelling headphones with 20 hours battery life",
+    "price": 199.99,
+    "category": "Electronics"
+  },
+  {
+    "id": 4,
+    "name": "Hybrid Mattress",
+    "description": "Queen size hybrid mattress combining foam and springs",
+    "price": 350.0,
+    "category": "Home Furnishing"
+  },
+  {
+    "id": 5,
+    "name": "Ergonomic Office Chair",
+    "description": "Adjustable office chair with lumbar support",
+    "price": 249.99,
+    "category": "Office Supplies"
+  },
+  {
+    "id": 6,
+    "name": "Stainless Steel Cookware Set",
+    "description": "10-piece cookware set including pans and pots",
+    "price": 120.0,
+    "category": "Kitchen Essentials"
+  },
+  {
+    "id": 7,
+    "name": "Smart Watch",
+    "description": "Water resistant smart watch with health tracking features",
+    "price": 199.99,
+    "category": "Wearable Technology"
+  },
+  {
+    "id": 8,
+    "name": "Gaming Console",
+    "description": "Latest generation gaming console with 8K support",
+    "price": 499.99,
+    "category": "Gaming"
+  },
+  {
+    "id": 9,
+    "name": "Yoga Mat",
+    "description": "Eco-friendly yoga mat with non-slip surface",
+    "price": 50.0,
+    "category": "Fitness"
+  },
+  {
+    "id": 10,
+    "name": "Professional Camera",
+    "description": "24MP DSLR camera with 18-55mm lens kit",
+    "price": 999.99,
+    "category": "Photography"
+  }
+]

@@ -1,4 +1,4 @@
-import AsyncErrorHandler from "../utils/asyncErrorHandler";
+import AsyncErrorHandler from "../utils/AsyncErrorHandler";
 import { ResponseError } from "../utils/ResponseError";
 import { Request, Response, NextFunction } from "express";
 import fs from "node:fs";
@@ -7,6 +7,13 @@ import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+interface Person {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+}
 
 export default class PeopleController {
   static getAllPeople = AsyncErrorHandler.wrapper(
@@ -32,7 +39,7 @@ export default class PeopleController {
       );
       const people = JSON.parse(response);
       const filteredPeople = people.filter(
-        (person) => person.id === parseInt(id)
+        (person: Person) => person.id === parseInt(id)
       );
 
       if (!filteredPeople.length) {
@@ -60,10 +67,10 @@ export default class PeopleController {
       );
       const people = JSON.parse(response);
       const checkPeopleId = people.filter(
-        (person) => person.id === parseInt(id)
+        (person: Person) => person.id === parseInt(id)
       );
       const checkPeopleEmail = people.filter(
-        (person) => person.email === email
+        (person: Person) => person.email === email
       );
 
       if (checkPeopleId.length) {
@@ -114,7 +121,7 @@ export default class PeopleController {
       );
       const people = JSON.parse(response);
       const filteredPeople = people.filter(
-        (person) => person.id === parseInt(id)
+        (person: Person) => person.id === parseInt(id)
       );
 
       if (!filteredPeople.length) {
@@ -124,7 +131,7 @@ export default class PeopleController {
 
       const newPeopleData = [
         { id: parseInt(id), name, username, email },
-        ...people.filter((person) => person.id !== parseInt(id)),
+        ...people.filter((person: Person) => person.id !== parseInt(id)),
       ];
 
       await fs.promises.writeFile(
@@ -148,7 +155,7 @@ export default class PeopleController {
       );
       const people = JSON.parse(response);
       const filteredPeople = people.filter(
-        (person) => person.id === parseInt(id)
+        (person: Person) => person.id === parseInt(id)
       );
 
       if (!filteredPeople.length) {
@@ -157,7 +164,7 @@ export default class PeopleController {
       }
 
       const deletedPeople = people.filter(
-        (person) => person.id !== parseInt(id)
+        (person: Person) => person.id !== parseInt(id)
       );
       await fs.promises.writeFile(
         path.join(__dirname, "../data/people.json"),

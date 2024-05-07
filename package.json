@@ -4,8 +4,9 @@
   "description": "ExpressJS With TypeScript - Chapter 5",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsc && nodemon dist/server.js"
   },
+  "type": "module",
   "author": "Muhlis Ahmad Abdillah",
   "license": "ISC",
   "dependencies": {

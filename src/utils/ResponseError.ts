@@ -1,7 +1,6 @@
 export class ResponseError extends Error {
   public status: string;
   public statusCode: number;
-  public message: string;
   public isOperational: boolean;
   constructor(message: string, statusCode: number) {
     super(message);
